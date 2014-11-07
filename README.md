@@ -9,3 +9,5 @@ Included utilities
 ------------------
 
   * echo
+  * false
+  * true
