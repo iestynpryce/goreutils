@@ -11,3 +11,4 @@ Included utilities
   * echo
   * false
   * true
+  * yes
