@@ -11,5 +11,6 @@ Included utilities
   * echo
   * false
   * true
+  * wc
   * whoami
   * yes
