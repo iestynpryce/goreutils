@@ -10,6 +10,7 @@ Included utilities
 
   * echo
   * false
+  * head
   * true
   * wc
   * whoami
