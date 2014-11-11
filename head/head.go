@@ -10,9 +10,12 @@ import (
 
 func main() {
 	nLines := flag.Int("n", 10, "number of lines")
+	quiet := flag.Bool("q", false, "print file headers")
 	flag.Parse()
 
-	for _, file := range flag.Args() {
+	var numfiles int = len(flag.Args())
+
+	for i, file := range flag.Args() {
 		f, err := os.Open(file)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
@@ -22,6 +25,10 @@ func main() {
 		var last_line bool = false
 		var lines int = 0
 
+		if !*quiet && numfiles > 1 {
+			fmt.Printf("==> %s <==\n", file)
+		}
+
 		nr := bufio.NewReader(f)
 		for {
 			line, err := nr.ReadString('\n')
@@ -30,6 +37,7 @@ func main() {
 			} else if err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			}
+
 			lines++
 
 			fmt.Print(line)
@@ -38,6 +46,11 @@ func main() {
 				break
 			}
 
+		}
+
+		/* Print multi file seperator */
+		if !*quiet && numfiles > 1 && i < len(flag.Args())-1 {
+			fmt.Println("")
 		}
 	}
 }
