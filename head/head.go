@@ -10,7 +10,7 @@ import (
 
 func main() {
 	nLines := flag.Int("n", 10, "number of lines")
-	quiet := flag.Bool("q", false, "print file headers")
+	quiet := flag.Bool("q", false, "supress file headers")
 	flag.Parse()
 
 	var numfiles int = len(flag.Args())
