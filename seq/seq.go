@@ -21,7 +21,7 @@ func main() {
 	var sep int = 1
 	var end int = 1
 
-	var delimeter rune = '\n'
+	delimeter := flag.String("s", "\n", "seperator of numbers")
 
 	flag.Parse()
 	args := flag.Args()
@@ -40,6 +40,11 @@ func main() {
 	}
 
 	for i := start; i <= end; i += sep {
-		fmt.Printf("%d%c", i, delimeter)
+		fmt.Printf("%d", i)
+		if i+sep <= end {
+			fmt.Printf("%s", *delimeter)
+		} else {
+			fmt.Printf("\n")
+		}
 	}
 }
