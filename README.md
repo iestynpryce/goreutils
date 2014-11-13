@@ -11,6 +11,7 @@ Included utilities
   * echo
   * false
   * head
+  * tail
   * true
   * wc
   * whoami
