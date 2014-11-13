@@ -7,6 +7,16 @@ import (
 	"strconv"
 )
 
+type TestEnd func(int, int) bool
+
+func MoreThanEq(a int, b int) bool {
+	return a >= b
+}
+
+func LessThanEq(a int, b int) bool {
+	return a <= b
+}
+
 func string_to_int(s string) int {
 	i, err := strconv.ParseInt(s, 0, 64)
 	if err != nil {
@@ -20,6 +30,8 @@ func main() {
 	var start int = 1
 	var sep int = 1
 	var end int = 1
+
+	var t TestEnd = LessThanEq
 
 	delimeter := flag.String("s", "\n", "seperator of numbers")
 
@@ -39,9 +51,16 @@ func main() {
 		end = string_to_int(args[2])
 	}
 
-	for i := start; i <= end; i += sep {
+	if start < end && sep < 0 {
+		os.Exit(0)
+	}
+	if start > end && sep < 0 {
+		t = MoreThanEq
+	}
+
+	for i := start; t(i, end); i += sep {
 		fmt.Printf("%d", i)
-		if i+sep <= end {
+		if t(i+sep, end) {
 			fmt.Printf("%s", *delimeter)
 		} else {
 			fmt.Printf("\n")
