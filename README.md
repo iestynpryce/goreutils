@@ -12,6 +12,7 @@ Included utilities
   * false
   * head
   * seq
+  * tac
   * tail
   * true
   * wc
