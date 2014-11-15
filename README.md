@@ -11,6 +11,7 @@ Included utilities
   * echo
   * false
   * head
+  * mkdir
   * seq
   * tac
   * tail
