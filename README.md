@@ -13,6 +13,7 @@ Included utilities
   * false
   * head
   * mkdir
+  * nl
   * seq
   * tac
   * tail
