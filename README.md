@@ -10,14 +10,16 @@ Included utilities
 
   * cp
   * echo
-  * false
+  * false+
   * head
   * mkdir
   * nl
   * seq
   * tac
   * tail
-  * true
+  * true+
   * wc
   * whoami
   * yes
+
++adheres to POSIX.1-2008
