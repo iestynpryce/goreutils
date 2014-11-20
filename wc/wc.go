@@ -35,12 +35,10 @@ func main() {
 	isWords := getopt.Bool('w', "count words")
 	isLines := getopt.Bool('l', "count lines")
 
-	isMaxLine := getopt.Bool('L', "max line length")
-
 	getopt.Parse()
 
 	// If no parameters are given default to showing lines, words and bytes
-	if !*isBytes && !*isChars && !*isWords && !*isLines && !*isMaxLine {
+	if !*isBytes && !*isChars && !*isWords && !*isLines {
 		*isBytes = true
 		*isWords = true
 		*isLines = true
@@ -87,20 +85,16 @@ func main() {
 
 		/* Print the outcome */
 		if *isLines {
-			fmt.Printf("%7d", l)
+			fmt.Printf("%d ", l)
 		}
 		if *isWords {
-			fmt.Printf("%7d", w)
-		}
-		if *isBytes {
-			fmt.Printf("%7d", c)
+			fmt.Printf("%d ", w)
 		}
 		if *isChars {
-			fmt.Printf("%7d", m)
+			fmt.Printf("%d ", m)
+		} else if *isBytes {
+			fmt.Printf("%d ", c)
 		}
-		if *isMaxLine {
-			fmt.Printf("%7d", L)
-		}
-		fmt.Println(" ", file)
+		fmt.Println(file)
 	}
 }
