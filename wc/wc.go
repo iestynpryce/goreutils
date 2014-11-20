@@ -7,7 +7,6 @@ import (
 	"io"
 	"os"
 	"regexp"
-	"strings"
 	"unicode/utf8"
 )
 
@@ -28,7 +27,7 @@ func main() {
 	 * l = lines
 	 * w = words
 	 */
-	var c, m, l, w, L int = 0, 0, 0, 0, 0
+	var total_c, total_m, total_l, total_w int = 0, 0, 0, 0
 
 	isBytes := getopt.Bool('c', "count bytes")
 	isChars := getopt.Bool('m', "count chars")
@@ -44,6 +43,8 @@ func main() {
 		*isLines = true
 	}
 
+	nargs := getopt.NArgs()
+
 	/* Loop through the file reading the statistics */
 	for _, file := range getopt.Args() {
 		f, err := os.Open(file)
@@ -51,6 +52,7 @@ func main() {
 			os.Exit(1)
 		}
 
+		var c, m, l, w int = 0, 0, 0, 0
 		var last_line bool = false
 
 		nr := bufio.NewReader(f)
@@ -62,15 +64,12 @@ func main() {
 				}
 				last_line = true
 			} else if err != nil {
-				os.Exit(1)
+				os.Exit(-1)
 			}
 			l++
-			tmp_l := len(strings.TrimSuffix(line, "\n"))
-			if tmp_l > L {
-				L = tmp_l
-			}
 			if *isBytes {
 				c += len(line)
+				total_c += len(line)
 			}
 			if *isChars {
 				m += count_chars(line)
@@ -96,5 +95,29 @@ func main() {
 			fmt.Printf("%d ", c)
 		}
 		fmt.Println(file)
+
+		/* Update total counts */
+		if nargs > 1 {
+			total_c += c
+			total_m += m
+			total_w += w
+			total_l += l
+		}
+	}
+
+	if nargs > 1 {
+		/* Print the outcome */
+		if *isLines {
+			fmt.Printf("%d ", total_l)
+		}
+		if *isWords {
+			fmt.Printf("%d ", total_w)
+		}
+		if *isChars {
+			fmt.Printf("%d ", total_m)
+		} else if *isBytes {
+			fmt.Printf("%d ", total_c)
+		}
+		fmt.Println("total")
 	}
 }
