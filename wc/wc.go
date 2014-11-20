@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-	"flag"
+	"code.google.com/p/getopt"
 	"fmt"
 	"io"
 	"os"
@@ -30,14 +30,14 @@ func main() {
 	 */
 	var c, m, l, w, L int = 0, 0, 0, 0, 0
 
-	isBytes := flag.Bool("c", false, "count bytes")
-	isChars := flag.Bool("m", false, "count chars")
-	isWords := flag.Bool("w", false, "count words")
-	isLines := flag.Bool("l", false, "count lines")
+	isBytes := getopt.Bool('c', "count bytes")
+	isChars := getopt.Bool('m', "count chars")
+	isWords := getopt.Bool('w', "count words")
+	isLines := getopt.Bool('l', "count lines")
 
-	isMaxLine := flag.Bool("L", false, "max line length")
+	isMaxLine := getopt.Bool('L', "max line length")
 
-	flag.Parse()
+	getopt.Parse()
 
 	// If no parameters are given default to showing lines, words and bytes
 	if !*isBytes && !*isChars && !*isWords && !*isLines && !*isMaxLine {
@@ -47,7 +47,7 @@ func main() {
 	}
 
 	/* Loop through the file reading the statistics */
-	for _, file := range flag.Args() {
+	for _, file := range getopt.Args() {
 		f, err := os.Open(file)
 		if err != nil {
 			os.Exit(1)
