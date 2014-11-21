@@ -28,6 +28,7 @@ func main() {
 	 * w = words
 	 */
 	var total_c, total_m, total_l, total_w int = 0, 0, 0, 0
+	var stdin_only bool = false
 
 	isBytes := getopt.Bool('c', "count bytes")
 	isChars := getopt.Bool('m', "count chars")
@@ -43,13 +44,24 @@ func main() {
 		*isLines = true
 	}
 
+	args := getopt.Args()
 	nargs := getopt.NArgs()
 
+	/* Add emtpy file to list if its empty */
+	if nargs == 0 {
+		args = append(args, "")
+		stdin_only = true
+	}
+
 	/* Loop through the file reading the statistics */
-	for _, file := range getopt.Args() {
-		f, err := os.Open(file)
-		if err != nil {
-			os.Exit(1)
+	for _, file := range args {
+		var f *os.File = os.Stdin
+		if file != "-" && file != "" && !stdin_only {
+			var err error
+			f, err = os.Open(file)
+			if err != nil {
+				os.Exit(1)
+			}
 		}
 
 		var c, m, l, w int = 0, 0, 0, 0
