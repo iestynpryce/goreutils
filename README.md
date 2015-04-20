@@ -9,6 +9,7 @@ Included utilities
 ------------------
 
   * base64
+  * basename
   * cp
   * echo
   * false+
