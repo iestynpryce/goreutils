@@ -8,6 +8,7 @@ It is intended to help the author with his exploration of Go.
 Included utilities
 ------------------
 
+  * base64
   * cp
   * echo
   * false+
