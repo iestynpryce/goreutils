@@ -13,7 +13,7 @@ func main() {
 	quiet := flag.Bool("q", false, "supress file headers")
 	flag.Parse()
 
-	var numfiles int = len(flag.Args())
+	var numfiles = len(flag.Args())
 
 	for i, file := range flag.Args() {
 		f, err := os.Open(file)
@@ -23,8 +23,8 @@ func main() {
 		}
 		defer f.Close()
 
-		var last_line bool = false
-		var lines int = 0
+		var lastLine = false
+		var lines
 
 		if !*quiet && numfiles > 1 {
 			fmt.Printf("==> %s <==\n", file)
@@ -34,7 +34,7 @@ func main() {
 		for {
 			line, err := nr.ReadString('\n')
 			if err == io.EOF {
-				last_line = true
+				lastLine = true
 			} else if err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			}
@@ -43,7 +43,7 @@ func main() {
 
 			fmt.Print(line)
 
-			if *nLines == lines || last_line {
+			if *nLines == lines || lastLine {
 				break
 			}
 
