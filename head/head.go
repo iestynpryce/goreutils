@@ -21,6 +21,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			os.Exit(-1)
 		}
+		defer f.Close()
 
 		var last_line bool = false
 		var lines int = 0
