@@ -1,3 +1,4 @@
+// nl: place line numbers at the beginning of lines
 package main
 
 import (
@@ -17,7 +18,7 @@ func main() {
 
 	args := flag.Args()
 
-	var line_num int = 1
+	var lineNum = 1
 	for _, file := range args {
 
 		f, err := os.Open(file)
@@ -27,33 +28,33 @@ func main() {
 
 		r := bufio.NewReader(f)
 		for {
-			var last_line bool = false
+			var lastLine = false
 			line, err := r.ReadString('\n')
 			if err == io.EOF {
 				if len(line) == 0 {
 					break
 				}
-				last_line = true
+				lastLine = true
 			} else if err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				break
 			}
 
-			is_blank := len(strings.TrimSpace(line)) > 0
+			isBlank := len(strings.TrimSpace(line)) > 0
 
 			// Only print line number if it's a non-blank line
-			if is_blank {
-				fmt.Printf("%6d%s", line_num, *s)
+			if isBlank {
+				fmt.Printf("%6d%s", lineNum, *s)
 			}
 
 			fmt.Printf("%s", line)
 
 			// Only iterate line number if it's a non-blank line
-			if is_blank {
-				line_num += *i
+			if isBlank {
+				lineNum += *i
 			}
 
-			if last_line {
+			if lastLine {
 				break
 			}
 		}
