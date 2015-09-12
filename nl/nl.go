@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"strings"
 )
@@ -23,7 +24,7 @@ func main() {
 
 		f, err := os.Open(file)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			log.Fatalln("Error: %v\n", err)
 		}
 
 		r := bufio.NewReader(f)
@@ -36,21 +37,20 @@ func main() {
 				}
 				lastLine = true
 			} else if err != nil {
-				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-				break
+				log.Fatalln("Error: %v\n", err)
 			}
 
-			isBlank := len(strings.TrimSpace(line)) > 0
+			isBlank := len(strings.TrimSpace(line)) == 0
 
 			// Only print line number if it's a non-blank line
-			if isBlank {
+			if !isBlank {
 				fmt.Printf("%6d%s", lineNum, *s)
 			}
 
 			fmt.Printf("%s", line)
 
 			// Only iterate line number if it's a non-blank line
-			if isBlank {
+			if !isBlank {
 				lineNum += *i
 			}
 
