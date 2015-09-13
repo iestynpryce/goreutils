@@ -67,7 +67,7 @@ var _ = Describe("Nl", func() {
 				Eventually(session.Out).Should(gbytes.Say("\\s+1.*\n\\s+2"))
 			})
 
-		FIt("should not return line numbers at the start of blank lines",
+		It("should not return line numbers at the start of blank lines",
 			func() {
 				Eventually(session.Out).Should(gbytes.Say("\\s+1.*\n\\s+2.*\n    \n\\s+3"))
 			})
