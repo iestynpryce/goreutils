@@ -19,6 +19,10 @@ func main() {
 
 	args := flag.Args()
 
+	if *i <= 0 {
+		log.Fatalf("Error: invalid line-increment value \"%d\"\n", *i)
+	}
+
 	var lineNum = 1
 	for _, file := range args {
 
