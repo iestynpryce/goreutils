@@ -19,6 +19,7 @@ Included utilities
   * seq
   * tac
   * tail
+  * tee
   * true+
   * wc
   * whoami
