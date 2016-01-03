@@ -141,6 +141,22 @@ var _ = Describe("Uniq", func() {
 		})
 	})
 
+	Context("when using the -d option", func() {
+		It("should only print duplicate lines, one for each group",
+			func() {
+				var input string = "foo\nfoo\nfoo\bar\n"
+				var output string = "foo\n"
+				command := exec.Command(pathToUniq, "-d")
+				stdin, err := command.StdinPipe()
+				Expect(err).NotTo(HaveOccurred())
+				defer stdin.Close()
+
+				session, _ := gexec.Start(command, GinkgoWriter, GinkgoWriter)
+				fmt.Fprintf(stdin, input)
+				Eventually(session.Out).Should(gbytes.Say(output))
+			})
+	})
+
 	Context("when presented with an unreadable file", func() {
 		var fname string = "test_badfile"
 

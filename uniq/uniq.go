@@ -16,6 +16,8 @@ func main() {
 	var firstLine bool = true
 	var lastLine string
 
+	d := flag.Bool("d", false, "only print duplicate lines, one for each group")
+
 	flag.Parse()
 	args := flag.Args()
 
@@ -61,12 +63,17 @@ func main() {
 		if firstLine {
 			lastLine = line
 			firstLine = false
-			fmt.Fprintf(out, "%s", line)
-
+			if !*d {
+				fmt.Fprintf(out, "%s", line)
+			}
 			continue
 		}
 
 		if line != lastLine {
+			if !*d {
+				fmt.Fprintf(out, "%s", line)
+			}
+		} else if *d {
 			fmt.Fprintf(out, "%s", line)
 		}
 
