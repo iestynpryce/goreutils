@@ -21,6 +21,7 @@ Included utilities
   * tail
   * tee
   * true+
+  * uniq
   * wc
   * whoami
   * yes
