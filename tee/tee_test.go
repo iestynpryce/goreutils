@@ -81,7 +81,7 @@ var _ = Describe("Tee", func() {
 			Expect(bytes.Equal(buf, benchmark)).To(Equal(true))
 		})
 
-		FIt("should append to a file with content", func() {
+		It("should append to a file with content", func() {
 			stdin, e := command.StdinPipe()
 			Expect(e).NotTo(HaveOccurred())
 			defer stdin.Close()
