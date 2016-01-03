@@ -1,7 +1,9 @@
 package main_test
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 
@@ -14,6 +16,7 @@ import (
 var _ = Describe("Uniq", func() {
 	Context("when presented with a duplicate free file", func() {
 		var fname string = "test_nodups"
+		var fout string = "test_nodups_out"
 		var benchmark string = "one\ntwo\nthree\n"
 
 		BeforeEach(func() {
@@ -28,19 +31,35 @@ var _ = Describe("Uniq", func() {
 		AfterEach(func() {
 			err := os.Remove(fname)
 			Expect(err).NotTo(HaveOccurred())
+
+			if _, e := os.Stat(fout); e == nil {
+				err = os.Remove(fout)
+				Expect(err).NotTo(HaveOccurred())
+			}
 		})
 
-		It("should output all the contents of the file", func() {
+		It("should output all the contents of the file (stdout)", func() {
 			command := exec.Command(pathToUniq, fname)
 			session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 			Expect(err).NotTo(HaveOccurred())
 			Eventually(session.Out).Should(gbytes.Say(benchmark))
 		})
+
+		It("should output all the contents of the file (outfile)", func() {
+			command := exec.Command(pathToUniq, fname, fout)
+			session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
+			Expect(err).NotTo(HaveOccurred())
+			session.Wait()
+
+			buf, _ := ioutil.ReadFile(fout)
+			Expect(bytes.Equal(buf, []byte(benchmark))).To(Equal(true))
+		})
 	})
 
 	Context("when presented with a file with duplicates on adjacent lines", func() {
 		var fname string = "test_adjdups"
-		var input string = "one\none\ntwo\nthree\nthree"
+		var fout string = "test_adjdups_out"
+		var input string = "one\none\ntwo\nthree\nthree\n"
 		var benchmark string = "one\ntwo\nthree\n"
 
 		BeforeEach(func() {
@@ -55,13 +74,28 @@ var _ = Describe("Uniq", func() {
 		AfterEach(func() {
 			err := os.Remove(fname)
 			Expect(err).NotTo(HaveOccurred())
+
+			if _, e := os.Stat(fout); e == nil {
+				err = os.Remove(fout)
+				Expect(err).NotTo(HaveOccurred())
+			}
 		})
 
-		It("should output all but duplicate lines in the file", func() {
+		It("should output all but duplicate lines in the file (stdout)", func() {
 			command := exec.Command(pathToUniq, fname)
 			session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 			Expect(err).NotTo(HaveOccurred())
 			Eventually(session.Out).Should(gbytes.Say(benchmark))
+		})
+
+		It("should output all but duplicate lines in the file (outfile)", func() {
+			command := exec.Command(pathToUniq, fname, fout)
+			session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
+			Expect(err).NotTo(HaveOccurred())
+			session.Wait()
+
+			buf, _ := ioutil.ReadFile(fout)
+			Expect(bytes.Equal(buf, []byte(benchmark))).To(Equal(true))
 		})
 	})
 
@@ -121,9 +155,22 @@ var _ = Describe("Uniq", func() {
 			Expect(err).NotTo(HaveOccurred())
 		})
 
-		It("should return a useful error message", func() {
+		It("should return a useful error message when reading", func() {
 
 			command := exec.Command(pathToUniq, fname)
+
+			session, _ := gexec.Start(command, GinkgoWriter, GinkgoWriter)
+			Eventually(session.Err).Should(gbytes.Say(".*Error:.*permission denied\n"))
+			session.Wait()
+		})
+
+		It("should return a useful error message when writing", func() {
+			var fread string = "test_file"
+			f, err := os.OpenFile(fread, os.O_CREATE|os.O_WRONLY, os.FileMode(0666))
+			Expect(err).NotTo(HaveOccurred())
+			f.Close()
+
+			command := exec.Command(pathToUniq, fread, fname)
 
 			session, _ := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 			Eventually(session.Err).Should(gbytes.Say(".*Error:.*permission denied\n"))

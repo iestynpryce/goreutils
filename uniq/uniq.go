@@ -12,12 +12,14 @@ import (
 
 func main() {
 	var reader *bufio.Reader
+	var out *os.File
 	var firstLine bool = true
 	var lastLine string
 
 	flag.Parse()
 	args := flag.Args()
 
+	// Open stdin or provided file as input
 	if len(args) == 0 {
 		reader = bufio.NewReader(os.Stdin)
 	} else {
@@ -26,10 +28,28 @@ func main() {
 			log.Fatalf("Error: %v\n", err)
 		}
 		reader = bufio.NewReader(f)
+
+		if len(args) > 1 {
+			f, err := os.OpenFile(args[1],
+				os.O_CREATE|os.O_WRONLY|os.O_TRUNC,
+				os.FileMode(0666))
+			if err != nil {
+				log.Fatalf("Error: %v\n", err)
+			}
+			out = f
+			defer out.Close()
+		}
 	}
 
+	// Default to outputting to stdout
+	if out == nil {
+		out = os.Stdout
+	}
+
+	// Loop over provided input
 	for {
 		line, err := reader.ReadString('\n')
+
 		if err == io.EOF {
 			if len(line) == 0 {
 				break
@@ -41,13 +61,13 @@ func main() {
 		if firstLine {
 			lastLine = line
 			firstLine = false
-			fmt.Fprintf(os.Stdout, "%s", line)
+			fmt.Fprintf(out, "%s", line)
 
 			continue
 		}
 
 		if line != lastLine {
-			fmt.Fprintf(os.Stdout, "%s", line)
+			fmt.Fprintf(out, "%s", line)
 		}
 
 		lastLine = line
