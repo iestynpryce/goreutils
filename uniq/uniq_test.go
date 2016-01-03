@@ -175,6 +175,9 @@ var _ = Describe("Uniq", func() {
 			session, _ := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 			Eventually(session.Err).Should(gbytes.Say(".*Error:.*permission denied\n"))
 			session.Wait()
+
+			err = os.Remove(fread)
+			Expect(err).NotTo(HaveOccurred())
 		})
 	})
 })
