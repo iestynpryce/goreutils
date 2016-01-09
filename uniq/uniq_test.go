@@ -132,11 +132,12 @@ var _ = Describe("Uniq", func() {
 			command := exec.Command(pathToUniq)
 			stdin, err := command.StdinPipe()
 			Expect(err).NotTo(HaveOccurred())
-			defer stdin.Close()
 
 			session, _ := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 
 			fmt.Fprintf(stdin, input)
+			stdin.Close()
+
 			Eventually(session.Out).Should(gbytes.Say(output))
 		})
 	})
@@ -144,15 +145,16 @@ var _ = Describe("Uniq", func() {
 	Context("when using the -d option", func() {
 		It("should only print duplicate lines, one for each group",
 			func() {
-				var input string = "foo\nfoo\nfoo\bar\n"
-				var output string = "foo\n"
+				var input string = "foo\nfoo\nfoo\nbar\nbaz\nbaz\n"
+				var output string = "foo\nbaz\n"
 				command := exec.Command(pathToUniq, "-d")
 				stdin, err := command.StdinPipe()
 				Expect(err).NotTo(HaveOccurred())
-				defer stdin.Close()
 
 				session, _ := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 				fmt.Fprintf(stdin, input)
+				stdin.Close()
+
 				Eventually(session.Out).Should(gbytes.Say(output))
 			})
 	})

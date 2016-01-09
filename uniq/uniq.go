@@ -49,11 +49,15 @@ func main() {
 	}
 
 	// Loop over provided input
+	var insideDuplicateBlock bool = false
 	for {
 		line, err := reader.ReadString('\n')
 
 		if err == io.EOF {
 			if len(line) == 0 {
+				if *d && insideDuplicateBlock {
+					fmt.Fprintf(out, "%s", lastLine)
+				}
 				break
 			}
 		} else if err != nil {
@@ -72,11 +76,16 @@ func main() {
 		if line != lastLine {
 			if !*d {
 				fmt.Fprintf(out, "%s", line)
+			} else if insideDuplicateBlock {
+				fmt.Fprintf(out, "%s", lastLine)
+				insideDuplicateBlock = false
 			}
-		} else if *d {
-			fmt.Fprintf(out, "%s", line)
+		} else {
+			insideDuplicateBlock = true
 		}
 
 		lastLine = line
 	}
+
+	os.Exit(0)
 }
