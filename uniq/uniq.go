@@ -10,12 +10,26 @@ import (
 	"os"
 )
 
+var (
+	counter int = 1 // default to 1 as this is the minimum value
+	c       *bool
+)
+
+func printLine(out io.Writer, line string) {
+	if *c {
+		fmt.Fprintf(out, "%d %s", counter, line)
+	} else {
+		fmt.Fprintf(out, "%s", line)
+	}
+}
+
 func main() {
 	var reader *bufio.Reader
 	var out *os.File
 	var firstLine bool = true
 	var lastLine string
 
+	c = flag.Bool("c", false, "preceed each output line with a count of th e number of times it occurred")
 	d := flag.Bool("d", false, "only print duplicate lines, one for each group")
 
 	flag.Parse()
@@ -55,9 +69,7 @@ func main() {
 
 		if err == io.EOF {
 			if len(line) == 0 {
-				if *d && insideDuplicateBlock {
-					fmt.Fprintf(out, "%s", lastLine)
-				}
+				printLine(out, lastLine)
 				break
 			}
 		} else if err != nil {
@@ -67,21 +79,20 @@ func main() {
 		if firstLine {
 			lastLine = line
 			firstLine = false
-			if !*d {
-				fmt.Fprintf(out, "%s", line)
-			}
 			continue
 		}
 
 		if line != lastLine {
 			if !*d {
-				fmt.Fprintf(out, "%s", line)
+				printLine(out, lastLine)
 			} else if insideDuplicateBlock {
-				fmt.Fprintf(out, "%s", lastLine)
+				printLine(out, lastLine)
 				insideDuplicateBlock = false
 			}
+			counter = 1 // reset to the minimum value
 		} else {
 			insideDuplicateBlock = true
+			counter++
 		}
 
 		lastLine = line

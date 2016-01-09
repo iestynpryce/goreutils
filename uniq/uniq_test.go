@@ -159,6 +159,23 @@ var _ = Describe("Uniq", func() {
 			})
 	})
 
+	Context("when using the -c option", func() {
+		It("should append the line with the count of number of occurrences",
+			func() {
+				var input string = "foo\nfoo\nfoo\nbar\nbaz\nbaz\n"
+				var output string = "3 foo\n1 bar\n2 baz\n"
+				command := exec.Command(pathToUniq, "-c")
+				stdin, err := command.StdinPipe()
+				Expect(err).NotTo(HaveOccurred())
+
+				session, _ := gexec.Start(command, GinkgoWriter, GinkgoWriter)
+				fmt.Fprintf(stdin, input)
+				stdin.Close()
+
+				Eventually(session.Out).Should(gbytes.Say(output))
+			})
+	})
+
 	Context("when presented with an unreadable file", func() {
 		var fname string = "test_badfile"
 
