@@ -31,6 +31,7 @@ func main() {
 
 	c = flag.Bool("c", false, "preceed each output line with a count of th e number of times it occurred")
 	d := flag.Bool("d", false, "only print duplicate lines, one for each group")
+	u := flag.Bool("u", false, "only print non duplicate lines")
 
 	flag.Parse()
 	args := flag.Args()
@@ -63,13 +64,16 @@ func main() {
 	}
 
 	// Loop over provided input
-	var insideDuplicateBlock bool = false
 	for {
 		line, err := reader.ReadString('\n')
 
 		if err == io.EOF {
 			if len(line) == 0 {
-				printLine(out, lastLine)
+				if !(*d && *u) {
+					if !(*u && counter > 1) && !(*d && counter == 1) {
+						printLine(out, lastLine)
+					}
+				}
 				break
 			}
 		} else if err != nil {
@@ -83,15 +87,18 @@ func main() {
 		}
 
 		if line != lastLine {
-			if !*d {
+			if !*d && !*u {
 				printLine(out, lastLine)
-			} else if insideDuplicateBlock {
-				printLine(out, lastLine)
-				insideDuplicateBlock = false
+			} else if !(*d && *u) {
+
+				if *d && counter > 1 {
+					printLine(out, lastLine)
+				} else if *u && counter == 1 {
+					printLine(out, lastLine)
+				}
 			}
 			counter = 1 // reset to the minimum value
 		} else {
-			insideDuplicateBlock = true
 			counter++
 		}
 

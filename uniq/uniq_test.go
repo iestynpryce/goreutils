@@ -159,6 +159,23 @@ var _ = Describe("Uniq", func() {
 			})
 	})
 
+	Context("when using the -u option", func() {
+		It("should only output non duplicated lines",
+			func() {
+				var input string = "foo\nfoo\nfoo\nbar\nbaz\nbaz\n"
+				var output string = "bar\n"
+				command := exec.Command(pathToUniq, "-u")
+				stdin, err := command.StdinPipe()
+				Expect(err).NotTo(HaveOccurred())
+
+				session, _ := gexec.Start(command, GinkgoWriter, GinkgoWriter)
+				fmt.Fprintf(stdin, input)
+				stdin.Close()
+
+				Eventually(session.Out).Should(gbytes.Say(output))
+			})
+	})
+
 	Context("when using the -c option", func() {
 		It("should append the line with the count of number of occurrences",
 			func() {
