@@ -24,7 +24,7 @@ func main() {
 		defer f.Close()
 
 		var lastLine = false
-		var lines
+		var lines int
 
 		if !*quiet && numfiles > 1 {
 			fmt.Printf("==> %s <==\n", file)
