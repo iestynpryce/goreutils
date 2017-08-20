@@ -51,12 +51,28 @@ func openFiles(args []string) (*bufio.Reader, *os.File) {
 	return reader, out
 }
 
+func isDefaultOperation(u, d bool) bool {
+	return !d && !u
+}
+
 func isSpecialOperation(u, d bool) bool {
 	return !(d && u) // one of d and u are true, but not both
 }
 
 func isPrintLastLine(u, d bool, counter int) bool {
 	return isSpecialOperation(u, d) && !(u && counter > 1) && !(d && counter == 1)
+}
+
+func printLineOnChange(out *os.File, line string, u, d bool, counter int) {
+	if isDefaultOperation(u, d) {
+		printLine(out, line)
+	} else if isSpecialOperation(u, d) {
+		if d && counter > 1 {
+			printLine(out, line)
+		} else if u && counter == 1 {
+			printLine(out, line)
+		}
+	}
 }
 
 func main() {
@@ -70,9 +86,6 @@ func main() {
 
 	flag.Parse()
 	args := flag.Args()
-
-	// Operation
-	var defaultOperation = !*d && !*u
 
 	// Open stdin or provided file as input, and stdout or provided file as output
 	reader, out = openFiles(args)
@@ -100,15 +113,7 @@ func main() {
 		}
 
 		if line != lastLine {
-			if defaultOperation {
-				printLine(out, lastLine)
-			} else if isSpecialOperation(*u, *d) {
-				if *d && counter > 1 {
-					printLine(out, lastLine)
-				} else if *u && counter == 1 {
-					printLine(out, lastLine)
-				}
-			}
+			printLineOnChange(out, lastLine, *u, *d, counter)
 			counter = 0 // reset to the minimum value -1
 		}
 
