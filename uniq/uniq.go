@@ -51,10 +51,17 @@ func openFiles(args []string) (*bufio.Reader, *os.File) {
 	return reader, out
 }
 
+func isSpecialOperation(u, d bool) bool {
+	return !(d && u) // one of d and u are true, but not both
+}
+
+func isPrintLastLine(u, d bool, counter int) bool {
+	return isSpecialOperation(u, d) && !(u && counter > 1) && !(d && counter == 1)
+}
+
 func main() {
 	var reader *bufio.Reader
 	var out *os.File
-	var firstLine = true
 	var lastLine string
 
 	c = flag.Bool("c", false, "precede each output line with a count of the number of times it occurred")
@@ -64,19 +71,27 @@ func main() {
 	flag.Parse()
 	args := flag.Args()
 
+	// Operation
+	var defaultOperation = !*d && !*u
+
 	// Open stdin or provided file as input, and stdout or provided file as output
 	reader, out = openFiles(args)
 
-	// Loop over provided input
+	// Buffer the 1st line
+	line, err := reader.ReadString('\n')
+	if err != nil && err != io.EOF {
+		log.Fatalf("error: %v\n", err)
+	}
+	lastLine = line
+
+	// Loop over the rest of the provided input
 	for {
 		line, err := reader.ReadString('\n')
 
 		if err == io.EOF {
 			if len(line) == 0 {
-				if !(*d && *u) {
-					if !(*u && counter > 1) && !(*d && counter == 1) {
-						printLine(out, lastLine)
-					}
+				if isPrintLastLine(*u, *d, counter) {
+					printLine(out, lastLine)
 				}
 				break
 			}
@@ -84,27 +99,20 @@ func main() {
 			log.Fatalf("Error: %v\n", err)
 		}
 
-		if firstLine {
-			lastLine = line
-			firstLine = false
-			continue
-		}
-
 		if line != lastLine {
-			if !*d && !*u {
+			if defaultOperation {
 				printLine(out, lastLine)
-			} else if !(*d && *u) { // one of d and u are true, but not both
+			} else if isSpecialOperation(*u, *d) {
 				if *d && counter > 1 {
 					printLine(out, lastLine)
 				} else if *u && counter == 1 {
 					printLine(out, lastLine)
 				}
 			}
-			counter = 1 // reset to the minimum value
-		} else {
-			counter++
+			counter = 0 // reset to the minimum value -1
 		}
 
+		counter++
 		lastLine = line
 	}
 
