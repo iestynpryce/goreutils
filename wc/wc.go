@@ -10,6 +10,34 @@ import (
 	"unicode/utf8"
 )
 
+type options struct {
+	isBytes bool
+	isChars bool
+	isWords bool
+	isLines bool
+}
+
+type counter struct {
+	c int // bytes
+	m int // characters
+	l int // lines
+	w int // words
+}
+
+func printCounts(o options, c counter) {
+	if o.isLines {
+		fmt.Printf("%d ", c.l)
+	}
+	if o.isWords {
+		fmt.Printf("%d ", c.w)
+	}
+	if o.isChars {
+		fmt.Printf("%d ", c.m)
+	} else if o.isBytes {
+		fmt.Printf("%d ", c.c)
+	}
+}
+
 // words are define as any space delimited substring
 func countWords(str string) int {
 	word := regexp.MustCompile("\\S+")
@@ -21,28 +49,28 @@ func countChars(str string) int {
 	return utf8.RuneCountInString(str)
 }
 
+// If no parameters are given default to showing lines, words and bytes
+func setDefaultOptions(o *options) {
+	if !o.isBytes && !o.isChars && !o.isWords && !o.isLines {
+		o.isBytes = true
+		o.isWords = true
+		o.isLines = true
+	}
+}
+
 func main() {
-	/* c = bytes
-	 * m = chars
-	 * l = lines
-	 * w = words
-	 */
-	var totalC, totalM, totalL, totalW int = 0, 0, 0, 0
+	var totalCount counter
 	var stdinOnly = false
 
-	isBytes := getopt.Bool('c', "count bytes")
-	isChars := getopt.Bool('m', "count chars")
-	isWords := getopt.Bool('w', "count words")
-	isLines := getopt.Bool('l', "count lines")
-
+	c := getopt.Bool('c', "count bytes")
+	m := getopt.Bool('m', "count chars")
+	w := getopt.Bool('w', "count words")
+	l := getopt.Bool('l', "count lines")
 	getopt.Parse()
 
-	// If no parameters are given default to showing lines, words and bytes
-	if !*isBytes && !*isChars && !*isWords && !*isLines {
-		*isBytes = true
-		*isWords = true
-		*isLines = true
-	}
+	opts := options{*c, *m, *w, *l}
+
+	setDefaultOptions(&opts)
 
 	args := getopt.Args()
 	nargs := getopt.NArgs()
@@ -64,7 +92,7 @@ func main() {
 			}
 		}
 
-		var c, m, l, w int = 0, 0, 0, 0
+		var count counter
 		var lastLine = false
 
 		nr := bufio.NewReader(f)
@@ -78,58 +106,33 @@ func main() {
 			} else if err != nil {
 				os.Exit(-1)
 			}
-			l++
-			if *isBytes {
-				c += len(line)
-				totalC += len(line)
-			}
-			if *isChars {
-				m += countChars(line)
-			}
-			if *isWords {
-				w += countWords(line)
-			}
+
+			count.l++
+			count.c += len(line)
+			count.m += countChars(line)
+			count.w += countWords(line)
+
 			if lastLine {
 				break
 			}
 		}
 
 		/* Print the outcome */
-		if *isLines {
-			fmt.Printf("%d ", l)
-		}
-		if *isWords {
-			fmt.Printf("%d ", w)
-		}
-		if *isChars {
-			fmt.Printf("%d ", m)
-		} else if *isBytes {
-			fmt.Printf("%d ", c)
-		}
+		printCounts(opts, count)
 		fmt.Println(file)
 
 		/* Update total counts */
 		if nargs > 1 {
-			totalC += c
-			totalM += m
-			totalW += w
-			totalL += l
+			totalCount.c += count.c
+			totalCount.m += count.m
+			totalCount.w += count.w
+			totalCount.l += count.l
 		}
 	}
 
 	if nargs > 1 {
 		/* Print the outcome */
-		if *isLines {
-			fmt.Printf("%d ", totalL)
-		}
-		if *isWords {
-			fmt.Printf("%d ", totalW)
-		}
-		if *isChars {
-			fmt.Printf("%d ", totalM)
-		} else if *isBytes {
-			fmt.Printf("%d ", totalC)
-		}
+		printCounts(opts, totalCount)
 		fmt.Println("total")
 	}
 }
