@@ -109,7 +109,7 @@ func main() {
 	}
 
 	if err := out.Close(); err != nil {
-		log.Fatal("Error %v\n", err)
+		log.Fatalf("Error %v\n", err)
 	}
 
 	os.Exit(0)
