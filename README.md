@@ -29,3 +29,4 @@ Included utilities
 +adheres to POSIX.1-2008
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/iestynpryce/goreutils)](https://goreportcard.com/report/github.com/iestynpryce/goreutils)
+[![Build Status](https://travis-ci.org/iestynpryce/goreutils.svg?branch=master)](https://travis-ci.org/iestynpryce/goreutils)
