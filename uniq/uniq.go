@@ -23,45 +23,49 @@ func printLine(out io.Writer, line string) {
 	}
 }
 
+// Open the input and output file descriptors
+func openFiles(args []string) (*bufio.Reader, *os.File) {
+	var reader *bufio.Reader
+	var out = os.Stdout
+
+	if len(args) == 0 {
+		return bufio.NewReader(os.Stdin), out
+	}
+
+	if len(args) > 1 {
+		f, err := os.OpenFile(args[1],
+			os.O_CREATE|os.O_WRONLY|os.O_TRUNC,
+			os.FileMode(0666))
+		if err != nil {
+			log.Fatalf("Error: %v\n", err)
+		}
+		out = f
+	}
+
+	f, err := os.Open(args[0])
+	if err != nil {
+		log.Fatalf("Error: %v\n", err)
+	}
+	reader = bufio.NewReader(f)
+
+	return reader, out
+}
+
 func main() {
 	var reader *bufio.Reader
 	var out *os.File
-	var firstLine bool = true
+	var firstLine = true
 	var lastLine string
 
-	c = flag.Bool("c", false, "precede each output line with a count of th e number of times it occurred")
+	c = flag.Bool("c", false, "precede each output line with a count of the number of times it occurred")
 	d := flag.Bool("d", false, "only print duplicate lines, one for each group")
 	u := flag.Bool("u", false, "only print non duplicate lines")
 
 	flag.Parse()
 	args := flag.Args()
 
-	// Open stdin or provided file as input
-	if len(args) == 0 {
-		reader = bufio.NewReader(os.Stdin)
-	} else {
-		f, err := os.Open(args[0])
-		if err != nil {
-			log.Fatalf("Error: %v\n", err)
-		}
-		reader = bufio.NewReader(f)
-
-		if len(args) > 1 {
-			f, err := os.OpenFile(args[1],
-				os.O_CREATE|os.O_WRONLY|os.O_TRUNC,
-				os.FileMode(0666))
-			if err != nil {
-				log.Fatalf("Error: %v\n", err)
-			}
-			out = f
-			defer out.Close()
-		}
-	}
-
-	// Default to outputting to stdout
-	if out == nil {
-		out = os.Stdout
-	}
+	// Open stdin or provided file as input, and stdout or provided file as output
+	reader, out = openFiles(args)
 
 	// Loop over provided input
 	for {
@@ -89,8 +93,7 @@ func main() {
 		if line != lastLine {
 			if !*d && !*u {
 				printLine(out, lastLine)
-			} else if !(*d && *u) {
-
+			} else if !(*d && *u) { // one of d and u are true, but not both
 				if *d && counter > 1 {
 					printLine(out, lastLine)
 				} else if *u && counter == 1 {
@@ -103,6 +106,10 @@ func main() {
 		}
 
 		lastLine = line
+	}
+
+	if err := out.Close(); err != nil {
+		log.Fatal("Error %v\n", err)
 	}
 
 	os.Exit(0)
