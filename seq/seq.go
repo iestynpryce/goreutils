@@ -33,7 +33,7 @@ func main() {
 
 	var t testEnd = lessThanEq
 
-	delimeter := flag.String("s", "\n", "seperator of numbers")
+	delimeter := flag.String("s", "\n", "separator of numbers")
 
 	flag.Parse()
 	args := flag.Args()

@@ -13,7 +13,7 @@ import (
 
 func main() {
 	i := flag.Int("i", 1, "line-increment")
-	s := flag.String("s", "\t", "number seperator")
+	s := flag.String("s", "\t", "number separator")
 
 	flag.Parse()
 

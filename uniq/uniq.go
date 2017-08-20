@@ -29,7 +29,7 @@ func main() {
 	var firstLine bool = true
 	var lastLine string
 
-	c = flag.Bool("c", false, "preceed each output line with a count of th e number of times it occurred")
+	c = flag.Bool("c", false, "precede each output line with a count of th e number of times it occurred")
 	d := flag.Bool("d", false, "only print duplicate lines, one for each group")
 	u := flag.Bool("u", false, "only print non duplicate lines")
 

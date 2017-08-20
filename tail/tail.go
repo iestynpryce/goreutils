@@ -17,7 +17,7 @@ func max(a int, b int) int {
 
 func main() {
 	nLines := flag.Int("n", 10, "number of lines")
-	quiet := flag.Bool("q", false, "supress file headers")
+	quiet := flag.Bool("q", false, "suppress file headers")
 	flag.Parse()
 
 	var numfiles = len(flag.Args())
@@ -49,7 +49,7 @@ func main() {
 			fmt.Print(line)
 		}
 
-		/* Print multi file seperator */
+		/* Print multi file separator */
 		if !*quiet && numfiles > 1 && i < len(flag.Args())-1 {
 			fmt.Println("")
 		}

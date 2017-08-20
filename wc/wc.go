@@ -47,7 +47,7 @@ func main() {
 	args := getopt.Args()
 	nargs := getopt.NArgs()
 
-	/* Add emtpy file to list if its empty */
+	/* Add empty file to list if its empty */
 	if nargs == 0 {
 		args = append(args, "")
 		stdinOnly = true
