@@ -1,7 +1,7 @@
 language: go
 
 install:
-        - go get code.google.com/p/getopt
+        - go get github.com/pborman/getopt
         - go get github.com/onsi/ginkgo
         - go get github.com/onsi/gomega
         - go get github.com/onsi/gomega/gexec
