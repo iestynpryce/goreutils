@@ -11,13 +11,13 @@ import (
 )
 
 // words are define as any space delimited substring
-func count_words(str string) int {
+func countWords(str string) int {
 	word := regexp.MustCompile("\\S+")
 	s := word.FindAllString(str, -1)
 	return len(s)
 }
 
-func count_chars(str string) int {
+func countChars(str string) int {
 	return utf8.RuneCountInString(str)
 }
 
@@ -27,8 +27,8 @@ func main() {
 	 * l = lines
 	 * w = words
 	 */
-	var total_c, total_m, total_l, total_w int = 0, 0, 0, 0
-	var stdin_only bool = false
+	var totalC, totalM, totalL, totalW int = 0, 0, 0, 0
+	var stdinOnly = false
 
 	isBytes := getopt.Bool('c', "count bytes")
 	isChars := getopt.Bool('m', "count chars")
@@ -50,13 +50,13 @@ func main() {
 	/* Add emtpy file to list if its empty */
 	if nargs == 0 {
 		args = append(args, "")
-		stdin_only = true
+		stdinOnly = true
 	}
 
 	/* Loop through the file reading the statistics */
 	for _, file := range args {
-		var f *os.File = os.Stdin
-		if file != "-" && file != "" && !stdin_only {
+		var f = os.Stdin
+		if file != "-" && file != "" && !stdinOnly {
 			var err error
 			f, err = os.Open(file)
 			if err != nil {
@@ -65,7 +65,7 @@ func main() {
 		}
 
 		var c, m, l, w int = 0, 0, 0, 0
-		var last_line bool = false
+		var lastLine = false
 
 		nr := bufio.NewReader(f)
 		for {
@@ -74,22 +74,22 @@ func main() {
 				if len(line) == 0 {
 					break
 				}
-				last_line = true
+				lastLine = true
 			} else if err != nil {
 				os.Exit(-1)
 			}
 			l++
 			if *isBytes {
 				c += len(line)
-				total_c += len(line)
+				totalC += len(line)
 			}
 			if *isChars {
-				m += count_chars(line)
+				m += countChars(line)
 			}
 			if *isWords {
-				w += count_words(line)
+				w += countWords(line)
 			}
-			if last_line {
+			if lastLine {
 				break
 			}
 		}
@@ -110,25 +110,25 @@ func main() {
 
 		/* Update total counts */
 		if nargs > 1 {
-			total_c += c
-			total_m += m
-			total_w += w
-			total_l += l
+			totalC += c
+			totalM += m
+			totalW += w
+			totalL += l
 		}
 	}
 
 	if nargs > 1 {
 		/* Print the outcome */
 		if *isLines {
-			fmt.Printf("%d ", total_l)
+			fmt.Printf("%d ", totalL)
 		}
 		if *isWords {
-			fmt.Printf("%d ", total_w)
+			fmt.Printf("%d ", totalW)
 		}
 		if *isChars {
-			fmt.Printf("%d ", total_m)
+			fmt.Printf("%d ", totalM)
 		} else if *isBytes {
-			fmt.Printf("%d ", total_c)
+			fmt.Printf("%d ", totalC)
 		}
 		fmt.Println("total")
 	}

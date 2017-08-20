@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func print_error(e error) {
+func printError(e error) {
 	if e != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", e)
 	}
@@ -22,10 +22,10 @@ func main() {
 	for _, f := range args {
 		if *parents {
 			err := os.MkdirAll(f, os.ModeDir|0777)
-			print_error(err)
+			printError(err)
 		} else {
 			err := os.Mkdir(f, os.ModeDir|0777)
-			print_error(err)
+			printError(err)
 
 		}
 	}

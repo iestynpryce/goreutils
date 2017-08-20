@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-func check_and_error(e error) {
+func checkAndError(e error) {
 	if e != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", e)
 		os.Exit(-1)
@@ -31,11 +31,11 @@ func main() {
 	}
 
 	src, err := os.Open(args[0])
-	check_and_error(err)
+	checkAndError(err)
 
 	dst, err := os.Create(args[1])
-	check_and_error(err)
+	checkAndError(err)
 
 	_, err = io.Copy(dst, src)
-	check_and_error(err)
+	checkAndError(err)
 }

@@ -13,10 +13,10 @@ import (
 // Global for program name
 var name string
 
-var wrap_cols int = 76
+var wrapColumns int = 76
 
 // Error checking helper
-func check_and_exit(e error) {
+func checkAndExit(e error) {
 	if e != nil {
 		fmt.Fprintf(os.Stderr, "%s: %v\n", name, e)
 		os.Exit(1)
@@ -24,7 +24,7 @@ func check_and_exit(e error) {
 }
 
 // Wrapped print
-func wrap_print(s string, w int) {
+func wrapPrint(s string, w int) {
 	for i := 0; i < len(s); i++ {
 		fmt.Printf("%c", s[i])
 		if (i+1)%w == 0 {
@@ -45,7 +45,7 @@ func main() {
 
 	for _, file := range flag.Args() {
 		f, err := os.Open(file)
-		check_and_exit(err)
+		checkAndExit(err)
 		reader := bufio.NewReader(f)
 		buf := make([]byte, 1024)
 		for {
@@ -54,7 +54,7 @@ func main() {
 			if err == io.EOF {
 				break
 			} else {
-				check_and_exit(err)
+				checkAndExit(err)
 			}
 			buffer.Write(buf[:n])
 		}
@@ -62,12 +62,12 @@ func main() {
 	if *dptr {
 		// Decode
 		data, err := base64.StdEncoding.DecodeString(buffer.String())
-		check_and_exit(err)
+		checkAndExit(err)
 		fmt.Printf("%s", data[:])
 	} else {
 		// Encode
 		str = base64.StdEncoding.EncodeToString(buffer.Bytes())
-		wrap_print(str, wrap_cols)
+		wrapPrint(str, wrapColumns)
 		fmt.Print("\n")
 	}
 }

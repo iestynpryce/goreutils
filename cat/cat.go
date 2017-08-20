@@ -12,7 +12,7 @@ import (
 var name string
 
 // Error checking helper
-func check_and_exit(e error) {
+func checkAndExit(e error) {
 	if e != nil {
 		fmt.Fprintf(os.Stderr, "%s: %v\n", name, e)
 		os.Exit(1)
@@ -35,15 +35,15 @@ func main() {
 	flag.Parse()
 
 	// Initialise line count
-	var linecount int = 0
+	var linecount int
 
 	// String buffer to store line contents for strings
 	// not ending in a new line
-	var strBuf string = ""
+	var strBuf string
 
 	for _, file := range flag.Args() {
 		f, err := os.Open(file)
-		check_and_exit(err)
+		checkAndExit(err)
 		reader := bufio.NewReader(f)
 		for {
 			str, err := reader.ReadString('\n')
@@ -51,7 +51,7 @@ func main() {
 				strBuf = str
 				break
 			} else {
-				check_and_exit(err)
+				checkAndExit(err)
 			}
 
 			linecount++

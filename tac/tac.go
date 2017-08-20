@@ -9,7 +9,7 @@ import (
 )
 
 // Error checking helper
-func check_and_exit(e error) {
+func checkAndExit(e error) {
 	if e != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v", e)
 		os.Exit(-1)
@@ -17,15 +17,16 @@ func check_and_exit(e error) {
 }
 
 // Print the file in the reverse order using recursive functions
-func reverse_print(r *bufio.Reader) {
+func reversePrint(r *bufio.Reader) {
 	str, err := r.ReadString('\n')
 	if err == io.EOF {
 		fmt.Print(str)
 		return
-	} else {
-		check_and_exit(err)
 	}
-	reverse_print(r)
+
+	checkAndExit(err)
+
+	reversePrint(r)
 	fmt.Print(str)
 }
 
@@ -34,8 +35,8 @@ func main() {
 
 	for _, file := range flag.Args() {
 		f, err := os.Open(file)
-		check_and_exit(err)
+		checkAndExit(err)
 		reader := bufio.NewReader(f)
-		reverse_print(reader)
+		reversePrint(reader)
 	}
 }

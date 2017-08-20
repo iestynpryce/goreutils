@@ -20,7 +20,7 @@ func main() {
 	quiet := flag.Bool("q", false, "supress file headers")
 	flag.Parse()
 
-	var numfiles int = len(flag.Args())
+	var numfiles = len(flag.Args())
 
 	for i, file := range flag.Args() {
 		f, err := os.Open(file)
@@ -34,18 +34,18 @@ func main() {
 		}
 
 		/* Read the entire file into memory, then split on newlines into an array */
-		file_all, err := ioutil.ReadAll(f)
+		fileAll, err := ioutil.ReadAll(f)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			os.Exit(-1)
 		}
-		file_array := strings.SplitAfter(string(file_all), "\n")
+		fileArray := strings.SplitAfter(string(fileAll), "\n")
 
-		var file_len int = len(file_array)
+		var fileLen = len(fileArray)
 
 		/* Print the last N lines */
-		for i = max(file_len-*nLines-1, 0); i < file_len; i++ {
-			line := file_array[i]
+		for i = max(fileLen-*nLines-1, 0); i < fileLen; i++ {
+			line := fileArray[i]
 			fmt.Print(line)
 		}
 
