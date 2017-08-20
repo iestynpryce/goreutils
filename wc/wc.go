@@ -2,8 +2,8 @@ package main
 
 import (
 	"bufio"
-	"code.google.com/p/getopt"
 	"fmt"
+	"github.com/pborman/getopt"
 	"io"
 	"os"
 	"regexp"
